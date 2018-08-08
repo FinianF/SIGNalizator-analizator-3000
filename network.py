@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
+tf.logging.set_verbosity(tf.logging.INFO)
 
 def cnn_model_fn(features, labels, mode):
 	"""Model function for CNN."""
@@ -56,7 +57,7 @@ def cnn_model_fn(features, labels, mode):
 		train_op = optimizer.minimize(
 			loss=loss,
 			global_step=tf.train.get_global_step())
-	return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
+		return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
 
 	# Add evaluation metrics (for EVAL mode)
 	eval_metric_ops = {
@@ -73,18 +74,6 @@ sign_classifier = tf.estimator.Estimator(
 
 def format_data(images):
 	data, labels = zip(*images)
-	data = np.array(data)
-	labels = list(labels)
-
-	for i, label in enumerate(labels):
-		labels[i] = label.index(1)
-
-	labels = np.array(labels)
-
-	return data, labels
-
-def cnn_train(images):
-	data, labels = zip(*images)
 	data = np.array(data, dtype=np.float32)
 	labels = list(labels)
 
@@ -92,6 +81,11 @@ def cnn_train(images):
 		labels[i] = label.index(1)
 
 	labels = np.asarray(labels, dtype=np.int32)
+
+	return data, labels
+
+def cnn_train(images):
+	data, labels = format_data(images)
 
 	# Train the model
 	train_input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -113,7 +107,7 @@ def cnn_train(images):
 
 
 def cnn_eval(images):
-	data, labels = zip(*images)
+	data, labels = format_data(images)
 
 	# Evaluate the model and print results
 	eval_input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -126,4 +120,12 @@ def cnn_eval(images):
 	return eval_results
 
 def cnn_predict(image):
-	pass
+	image = np.array(image, dtype=np.float32)
+
+	input_fn = tf.estimator.inputs.numpy_input_fn(
+		x={'x': image},
+		num_epochs=1,
+		shuffle=False)
+	result = sign_classifier.predict(input_fn=input_fn)
+
+	return result

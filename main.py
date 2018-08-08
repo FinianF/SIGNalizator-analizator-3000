@@ -121,7 +121,12 @@ def predict_label(rgb_image):
 
 	Выходные данные: метка изображения
 	"""
-	return cnn_predict(rgb_image)
+	result = [0] * 8
+
+	for prediction in  cnn_predict(rgb_image): #FIXME GOVNOCODE
+		result[prediction['classes']] = 1
+
+	return result
 
 
 # Получение списка неклассифицированных изображений
@@ -176,9 +181,35 @@ def main(*args):
 			random.shuffle(STANDARDIZED_TEST_LIST)
 			runspec.append(cnn_eval(STANDARDIZED_TEST_LIST))
 
+			random.shuffle(STANDARDIZED_TEST_LIST)
+			pred = None
+			for prediction in cnn_predict(STANDARDIZED_TEST_LIST[0][0]):
+				pred = prediction['classes']
+
+			cv2.imshow(str(pred), STANDARDIZED_TEST_LIST[0][0])
+			cv2.waitKey(0)
+
+
 		elif cmd == 'validate':
-			pass
+			MISSCLASSIFIED = get_misclassified_images(STANDARDIZED_VAL_LIST)
+
+			total = len(STANDARDIZED_VAL_LIST)
+			num_correct = total - len(MISSCLASSIFIED)
+			accuracy = num_correct / total
+
+			runspec.append(accuracy)
+
+
+		else:
+			image = cv2.imread(cmd)
+			image = standardize_input(image)
+			result = cnn_predict(image)
+			for r in result:
+				print(r)
+
+
+	return runspec
 
 
 if __name__ == '__main__':
-	main(*sys.argv[1:])
+	print( main(*sys.argv[1:]) )
