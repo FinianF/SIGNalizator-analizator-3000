@@ -35,7 +35,7 @@ def cnn_model_fn(features, labels, mode):
 		inputs=dense, rate=0.4, training=mode == tf.estimator.ModeKeys.TRAIN)
 
 	# Logits Layer
-	logits = tf.layers.dense(inputs=dropout, units=8)
+	logits = tf.layers.dense(inputs=dropout, units=9)
 
 	predictions = {
 		# Generate predictions (for PREDICT and EVAL mode)
@@ -78,7 +78,8 @@ def format_data(images):
 	labels = list(labels)
 
 	for i, label in enumerate(labels):
-		labels[i] = label.index(1)
+		try: labels[i] = label.index(1)
+		except: labels[i] = 8
 
 	labels = np.asarray(labels, dtype=np.int32)
 

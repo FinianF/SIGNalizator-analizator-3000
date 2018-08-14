@@ -121,10 +121,10 @@ def predict_label(rgb_image):
 
 	Выходные данные: метка изображения
 	"""
-	result = [0] * 8
+	result = [0] * 9
 
-	for prediction in  cnn_predict(rgb_image): #FIXME GOVNOCODE
-		result[prediction['classes']] = 1
+	result[ cnn_predict(rgb_image)[0]['classes'] ] = 1
+	result = result[:-1]
 
 	return result
 
@@ -206,7 +206,6 @@ def main(*args):
 			result = cnn_predict(image)
 			for r in result:
 				print(r)
-
 
 	return runspec
 
