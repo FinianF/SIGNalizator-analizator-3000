@@ -123,9 +123,10 @@ def predict_label(rgb_image):
 	"""
 	result = [0] * 9
 
-	result[ cnn_predict(rgb_image)[0]['classes'] ] = 1
-	result = result[:-1]
+	prediction = next(cnn_predict(rgb_image), 8)
+	result[prediction['classes']] = 1
 
+	result = result[:-1]
 	return result
 
 

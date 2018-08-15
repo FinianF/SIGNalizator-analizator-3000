@@ -69,7 +69,7 @@ def cnn_model_fn(features, labels, mode):
 
 # Create the Estimator
 sign_classifier = tf.estimator.Estimator(
-	model_fn=cnn_model_fn, model_dir="C:\projects/SIGNalizator-analizator-3000/network")
+	model_fn=cnn_model_fn, model_dir="./network-final")
 
 
 def format_data(images):
